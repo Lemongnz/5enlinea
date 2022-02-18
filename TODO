@@ -1,13 +1,13 @@
 - reiniciar tablero
 
 - contador de victorias
-  .boton reinicio victorias
-  .historial de v
+    .boton reinicio victorias
+    .historial de victorias
 
 - formulario jugadores
-  .circulos de colores
-  .elegir colores
-  .nombre del jugador
-  .formas a la ficha
+    .circulos de colores
+    .elegir colores
+    .nombre del jugador
+    .formas a la ficha
 
 -

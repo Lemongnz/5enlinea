@@ -5,10 +5,7 @@ import Link from 'next/link';
 
 
 export default function Home() {
-  const [turn, setTurn] = useState("X");
-  const [cells, setCells] = useState(() => new Array(42).fill(""))
-
-
+  
   const wins = [
 
     // 1st row
@@ -86,24 +83,71 @@ export default function Home() {
     [20, 27, 34, 41],
 
 
+
+
+
     //1 Diagonal
     [3, 9, 15, 21],
+
     [4, 10, 16, 22],
-    [20, 27, 34, 41],
+    [10, 16, 22, 28],
+
+    [5, 11, 17, 23],
+    [11, 17, 23, 29],
+    [17, 23, 29, 35],
+
+    [6, 12, 18, 24],
+    [12, 18, 24, 30],
+    [18, 24, 30, 36],
+
+    [13, 19, 25, 31],
+    [19, 25, 31, 37],
+
+    [20, 26, 32, 38]
 
 
+
+    //2 Diagonal
+
+    [14, 22, 30, 38],
+
+    [7, 15, 23, 31,],
+    [15, 23, 31, 39],
+
+    [0, 8, 16, 24,],
+    [8, 16, 24, 32],
+    [16, 24, 32, 40],
+
+    [1, 9, 17, 25],
+    [9, 17, 25, 33],
+    [17, 25, 33, 41],
+
+    [2, 10, 18, 26],
+    [10, 18, 26, 34],
+
+    [3, 11, 19, 27],
     
   ]
 
 
+  const [turn, setTurn] = useState("X");
+  const [cells, setCells] = useState(() => new Array(42).fill(""))
 
+  
   function handleClick(index) {
-    const cell = cells[index];
+    const cellsCopy = [...cells]
+    const cell = cellsCopy[index];
 
     if (cell === "") {
       setTurn((turn) => (turn === "X" ? "O" : "X"))
-      cells[index] = turn;
+      cellsCopy[index] = turn;
+      setCells(cellsCopy)
     } 
+  }
+
+  function resetTable() {
+    setCells([...cells].fill(""))
+    setTurn("X")
   }
   
 
@@ -120,6 +164,7 @@ export default function Home() {
           <div key={index} className={styles.cell} onClick={() => handleClick(index)}>{cell}<span>{index}</span></div>         
         ))}
       </div>
+      <button onClick={() =>  resetTable()}>Resetear</button>
     </div>
   )
 }
