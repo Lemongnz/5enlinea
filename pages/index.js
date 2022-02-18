@@ -165,6 +165,16 @@ export default function Home() {
         ))}
       </div>
       <button onClick={() =>  resetTable()}>Resetear</button>
+      <div>
+        <div>
+          <span>Jugador 1</span>
+          <input id='jugador1' type="color" />
+        </div>
+        <div>
+          <span>Jugador 2</span>
+          <input id='jugador2' type="color" />
+        </div>
+      </div>
     </div>
   )
 }
