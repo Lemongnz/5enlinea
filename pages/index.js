@@ -1,13 +1,10 @@
 import styles from '../styles/Home.module.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link';
-
-
 
 export default function Home() {
   
   const wins = [
-
     // 1st row
     [35, 36, 37, 38],
     [36, 37, 38, 39],
@@ -44,9 +41,6 @@ export default function Home() {
     [2, 3, 4, 5],
     [3, 4, 5, 6],
 
-
-
-
     //1 column
     [0, 7, 14, 21],
     [7, 14, 21, 28],
@@ -82,97 +76,137 @@ export default function Home() {
     [13, 20, 27, 34],
     [20, 27, 34, 41],
 
-
-
-
-
     //1 Diagonal
     [3, 9, 15, 21],
-
     [4, 10, 16, 22],
     [10, 16, 22, 28],
-
     [5, 11, 17, 23],
     [11, 17, 23, 29],
     [17, 23, 29, 35],
-
     [6, 12, 18, 24],
     [12, 18, 24, 30],
     [18, 24, 30, 36],
-
     [13, 19, 25, 31],
     [19, 25, 31, 37],
-
-    [20, 26, 32, 38]
-
-
+    [20, 26, 32, 38],
 
     //2 Diagonal
-
     [14, 22, 30, 38],
-
     [7, 15, 23, 31,],
     [15, 23, 31, 39],
-
     [0, 8, 16, 24,],
     [8, 16, 24, 32],
     [16, 24, 32, 40],
-
     [1, 9, 17, 25],
     [9, 17, 25, 33],
     [17, 25, 33, 41],
-
     [2, 10, 18, 26],
     [10, 18, 26, 34],
-
-    [3, 11, 19, 27],
-    
+    [3, 11, 19, 27],    
   ]
 
+  const [color1, setColor1] = useState("#ff0000");
+  const [color2, setColor2] = useState("#1100ff");
+  const [historial, setHistorial] = useState({X: 0, O: 0});
+  const [disabledBoard, setDisabledBoard] = useState(true);
 
   const [turn, setTurn] = useState("X");
-  const [cells, setCells] = useState(() => new Array(42).fill(""))
+  const [cells, setCells] = useState(() => new Array(42).fill(""));
 
-  
+  useEffect(() => {
+    const cellsXindex = [];
+    const cellsOindex = [];
+    let howWon;
+
+    cells.forEach((cell, index) => {
+      if (cell === 'X') {
+        cellsXindex.push(index);
+      }
+
+      if (cell === 'O') {
+        cellsOindex.push(index);
+      }
+    });    
+
+    for (const index in wins) {
+      const indexes = wins[index];
+
+      const winSomeX = indexes.every((index) => {
+        return cellsXindex.includes(index);
+      });
+
+      const winSomeO = indexes.every((index) => {
+        return cellsOindex.includes(index);
+      });
+
+      if (winSomeO) {
+        howWon = 'O';
+        break;
+      }
+      if (winSomeX) {
+        howWon = 'X';
+        break;
+      }
+    }
+
+    if (howWon) {
+      const copiaHistorial = {...historial};
+      copiaHistorial[howWon] += 1;
+      setHistorial(copiaHistorial);
+      // resetTable();
+      setDisabledBoard(false);
+    }
+
+  }, [cells]);
+
   function handleClick(index) {
+    if (!disabledBoard) {
+      return;
+    }
     const cellsCopy = [...cells]
     const cell = cellsCopy[index];
 
     if (cell === "") {
       setTurn((turn) => (turn === "X" ? "O" : "X"))
       cellsCopy[index] = turn;
-      setCells(cellsCopy)
-    } 
+      setCells(cellsCopy);
+    }
   }
 
-  function resetTable() {
-    setCells([...cells].fill(""))
-    setTurn("X")
+  const resetTable = () => {
+    setCells([...cells].fill(""));
+    setTurn("X");
+    setDisabledBoard(true);
   }
-  
+
+  const styleColorCoins = (cell) => { 
+    return { color: cell == 'X' ? color1 : color2 };
+  };
 
   return (
     <div className={styles.container}>
-      <main className={styles.main}>  
+      {/* <main className={styles.main}>  
         <h1 className={styles.title}>
           Welcome to <Link href="/">4</Link> en Linea
         </h1>
-      </main>
-      <h1>Es el turno de: {turn}</h1>
+      </main> */}
+      <h1 style={styleColorCoins(turn)}>{historial.X} - {historial.O}</h1>
+      <h1 style={styleColorCoins(turn)}>Es el turno de: {turn}</h1>
       <div className={styles.board}>    
         {cells.map(( cell, index) => (
-          <div key={index} className={styles.cell} onClick={() => handleClick(index)}>{cell}<span>{index}</span></div>         
+          <div key={index} className={styles.cell} onClick={() => handleClick(index)}><div style={styleColorCoins(cell)}>{cell}</div><span>{index}</span></div>
         ))}
       </div>
       <button onClick={() =>  resetTable()}>Resetear</button>
+
       <div>
         <div>
           <span>Jugador 1</span>
-          <input id='jugador1' type="color" />
+          <input id='jugador1' type="color" value={color1} onChange={e => setColor1(e.target.value)} />
         </div>
         <div>
           <span>Jugador 2</span>
-          <input id='jugador2' type="color" />
+          <input id='jugador2' type="color" value={color2} onChange={e => setColor2(e.target.value)} />
         </div>
       </div>
     </div>
