@@ -163,12 +163,20 @@ export default function Home() {
     if (!disabledBoard) {
       return;
     }
+
     const cellsCopy = [...cells]
+
     const cell = cellsCopy[index];
+
+    let nextIndex = index;
+
+    while ((nextIndex + 7) < cellsCopy.length && !cellsCopy[nextIndex + 7]) {
+      nextIndex += 7;
+    }
 
     if (cell === "") {
       setTurn((turn) => (turn === "X" ? "O" : "X"))
-      cellsCopy[index] = turn;
+      cellsCopy[nextIndex] = turn;
       setCells(cellsCopy);
     }
   }
