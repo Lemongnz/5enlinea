@@ -1,8 +1,21 @@
 import styles from '../styles/Home.module.css'
 import { useEffect, useState } from 'react'
-import Link from 'next/link';
+
+import { io } from "socket.io-client";
 
 export default function Home() {
+  const socket = io();
+
+  socket.on('selectPlayer', (data) => {
+    if (!player) {
+      setPlayer(data)
+    }
+  })
+
+  socket.on('move', (data) => {
+    setTurn(data.turn === 'X' ? 'O' : 'X')
+    setCells(data.cells)
+  })
   
   const wins = [
     // 1st row
@@ -110,6 +123,8 @@ export default function Home() {
   const [historial, setHistorial] = useState({X: 0, O: 0});
   const [disabledBoard, setDisabledBoard] = useState(true);
 
+  const [player, setPlayer] = useState(null);
+
   const [turn, setTurn] = useState("X");
   const [cells, setCells] = useState(() => new Array(42).fill(""));
 
@@ -164,6 +179,10 @@ export default function Home() {
       return;
     }
 
+    if (player && turn !== player) {
+      return;
+    }
+
     const cellsCopy = [...cells]
 
     const cell = cellsCopy[index];
@@ -175,9 +194,14 @@ export default function Home() {
     }
 
     if (cell === "") {
+      if (!player) {
+        setPlayer(turn)
+        socket.emit('selectPlayer', turn === "X" ? "O" : "X")
+      }
       setTurn((turn) => (turn === "X" ? "O" : "X"))
       cellsCopy[nextIndex] = turn;
       setCells(cellsCopy);
+      socket.emit('move', { turn, cells: cellsCopy })
     }
   }
 
@@ -198,8 +222,9 @@ export default function Home() {
           Welcome to <Link href="/">4</Link> en Linea
         </h1>
       </main> */}
-      <h1 style={styleColorCoins(turn)}>{historial.X} - {historial.O}</h1>
-      <h1 style={styleColorCoins(turn)}>Es el turno de: {turn}</h1>
+      <h1 style={styleColorCoins(player)}>Soy: {player}</h1>
+      <h1 style={styleColorCoins(player)}>{historial.X} - {historial.O}</h1>
+      <h1 style={styleColorCoins(player)}>Es el turno de: {turn}</h1>
       <div className={styles.board}>    
         {cells.map(( cell, index) => (
           <div key={index} className={styles.cell} onClick={() => handleClick(index)}><div style={styleColorCoins(cell)}>{cell}</div><span>{index}</span></div>
