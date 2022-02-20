@@ -3,17 +3,23 @@ import { useEffect, useState } from 'react'
 
 import { io } from "socket.io-client";
 
-export default function Home() {
-  const socket = io();
+const socket = io();
 
+socket.on('connect', () => {
+  console.log(socket.id);
+})
+
+export default function Home() {
   socket.on('selectPlayer', (data) => {
+    console.log('selectPlayer')
     if (!player) {
       setPlayer(data)
-      setOffline(false)
+      // setOffline(false)
     }
   })
-
+  
   socket.on('move', (data) => {
+    console.log('move');
     setTurn(data.turn === 'X' ? 'O' : 'X')
     setCells(data.cells)
   })
@@ -124,7 +130,7 @@ export default function Home() {
   const [historial, setHistorial] = useState({X: 0, O: 0});
   const [disabledBoard, setDisabledBoard] = useState(true);
 
-  const [offline, setOffline] = useState(true);
+  // const [offline, setOffline] = useState(true);
 
   const [player, setPlayer] = useState(null);
 
@@ -182,7 +188,7 @@ export default function Home() {
       return;
     }
 
-    if (player && !offline && turn !== player) {
+    if (player && turn !== player) {
       return;
     }
 
@@ -197,13 +203,15 @@ export default function Home() {
     }
 
     if (cell === "") {
-      if (!player) {
-        setPlayer(turn)
-        socket.emit('selectPlayer', turn === "X" ? "O" : "X")
-      }
+      // if (!player) {
+      //   setPlayer(turn)
+      //   socket.emit('selectPlayer', turn === "X" ? "O" : "X")
+      // }
       setTurn((turn) => (turn === "X" ? "O" : "X"))
-      cellsCopy[nextIndex] = turn;
-      setCells(cellsCopy);
+      cellsCopy[nextIndex] = turn
+      setCells(cellsCopy)
+
+      console.log('move emit');
       socket.emit('move', { turn, cells: cellsCopy })
     }
   }
@@ -235,7 +243,7 @@ export default function Home() {
       </div>
 
       <div>
-        <span>Offline: { offline ? 'true' : 'false' }</span>
+        {/* <span>Offline: { offline ? 'true' : 'false' }</span> */}
       </div>
       
       <button onClick={() =>  resetTable()}>Resetear</button>

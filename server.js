@@ -20,9 +20,10 @@ app.prepare().then(() => {
     socket.on('move', (data) => {
         socket.broadcast.emit('move', data);
     })
+
     socket.on('selectPlayer', (data) => {
       socket.broadcast.emit('selectPlayer', data);
-  })
+    })
   });
 
   app.all('*', (req, res) => {
