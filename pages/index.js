@@ -9,6 +9,7 @@ export default function Home() {
   socket.on('selectPlayer', (data) => {
     if (!player) {
       setPlayer(data)
+      setOffline(false)
     }
   })
 
@@ -123,6 +124,8 @@ export default function Home() {
   const [historial, setHistorial] = useState({X: 0, O: 0});
   const [disabledBoard, setDisabledBoard] = useState(true);
 
+  const [offline, setOffline] = useState(true);
+
   const [player, setPlayer] = useState(null);
 
   const [turn, setTurn] = useState("X");
@@ -179,7 +182,7 @@ export default function Home() {
       return;
     }
 
-    if (player && turn !== player) {
+    if (player && !offline && turn !== player) {
       return;
     }
 
@@ -230,6 +233,11 @@ export default function Home() {
           <div key={index} className={styles.cell} onClick={() => handleClick(index)}><div style={styleColorCoins(cell)}>{cell}</div><span>{index}</span></div>
         ))}
       </div>
+
+      <div>
+        <span>Offline: { offline ? 'true' : 'false' }</span>
+      </div>
+      
       <button onClick={() =>  resetTable()}>Resetear</button>
 
       <div>
@@ -241,6 +249,8 @@ export default function Home() {
           <span>Jugador 2</span>
           <input id='jugador2' type="color" value={color2} onChange={e => setColor2(e.target.value)} />
         </div>
+
+        
       </div>
     </div>
   )
